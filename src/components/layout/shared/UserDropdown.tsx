@@ -23,6 +23,8 @@ import Button from '@mui/material/Button'
 
 // Hook Imports
 import { useSettings } from '@core/hooks/useSettings'
+import { useSelector } from 'react-redux'
+import { RootState } from '@/redux/store'
 
 // Styled component for badge content
 const BadgeContentSpan = styled('span')({
@@ -67,6 +69,8 @@ const UserDropdown = () => {
     router.push('/login')
   }
 
+  const currentuser = useSelector((state:RootState)=>state.auth.currentuser)
+console.log('utilisateur connecté : ',currentuser)
   return (
     <>
       <Badge

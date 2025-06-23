@@ -34,6 +34,14 @@ import themeConfig from '@configs/themeConfig'
 import { useImageVariant } from '@core/hooks/useImageVariant'
 import { useSettings } from '@core/hooks/useSettings'
 
+
+import * as Yup from "yup";
+import { useForm } from 'react-hook-form'
+import { yupResolver } from '@hookform/resolvers/yup'
+import { useDispatch } from 'react-redux'
+import { LoginUser } from '@/redux/actions/authActions'
+import { AppDispatch, RootState } from '../redux/store'
+
 const LoginV2 = ({ mode }: { mode: Mode }) => {
   // States
   const [isPasswordShown, setIsPasswordShown] = useState(false)
@@ -60,6 +68,35 @@ const LoginV2 = ({ mode }: { mode: Mode }) => {
   )
 
   const handleClickShowPassword = () => setIsPasswordShown(show => !show)
+  const validationSchema = Yup.object({
+    email : Yup.string().email('Invalid email Format').required('Email is required'),
+    password : Yup.string().min(8,'Password must be at least 8 caracters').required('Password is required')
+
+  })
+
+  const {
+    register,
+    handleSubmit,
+    formState:{ errors }
+  } = useForm ({
+    resolver:yupResolver(validationSchema)
+  })
+
+
+  const dispatch = useDispatch <AppDispatch>()
+
+  const onSubmit= async (data:{email:string,password:string}) => {
+    const resultaction = await dispatch(LoginUser(data))
+    if (LoginUser.fulfilled.match(resultaction))
+    {const token = resultaction.payload.token
+      if (token)
+      {
+        console.log(resultaction)
+        localStorage.setItem('token',token)
+      }
+      router.push('/')
+    }
+  }
 
   return (
     <div className='flex bs-full justify-center'>
@@ -96,17 +133,18 @@ const LoginV2 = ({ mode }: { mode: Mode }) => {
           <form
             noValidate
             autoComplete='off'
-            onSubmit={e => {
-              e.preventDefault()
-              router.push('/')
-            }}
+            onSubmit={ handleSubmit(onSubmit)
+       
+            }
             className='flex flex-col gap-5'
           >
-            <TextField autoFocus fullWidth label='Email' />
+            <TextField autoFocus fullWidth label='Email' {... register("email")} 
+            error={!!errors.email} helperText={errors.email?.message}/>
             <TextField
               fullWidth
               label='Password'
               type={isPasswordShown ? 'text' : 'password'}
+              {... register("password")} error={!!errors.password} helperText={errors.password?.message}
               slotProps={{
                 input: {
                   endAdornment: (
