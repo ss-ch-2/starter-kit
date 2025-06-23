@@ -88,7 +88,7 @@ const LoginV2 = ({ mode }: { mode: Mode }) => {
   const onSubmit= async (data:{email:string,password:string}) => {
     const resultaction = await dispatch(LoginUser(data))
     if (LoginUser.fulfilled.match(resultaction))
-    {const token = resultaction.payload.token
+    {const token = resultaction.payload.tokens
       if (token)
       {
         console.log(resultaction)

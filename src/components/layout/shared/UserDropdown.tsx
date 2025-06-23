@@ -23,8 +23,11 @@ import Button from '@mui/material/Button'
 
 // Hook Imports
 import { useSettings } from '@core/hooks/useSettings'
-import { useSelector } from 'react-redux'
+import { useDispatch, useSelector } from 'react-redux'
 import { RootState } from '@/redux/store'
+
+
+import {Logout} from '../../../redux/slices/authSlice'
 
 // Styled component for badge content
 const BadgeContentSpan = styled('span')({
@@ -63,14 +66,14 @@ const UserDropdown = () => {
 
     setOpen(false)
   }
-
+ const dispatch = useDispatch();
   const handleUserLogout = async () => {
     // Redirect to login page
+   dispatch(Logout())
     router.push('/login')
   }
 
-  const currentuser = useSelector((state:RootState)=>state.auth.currentuser)
-console.log('utilisateur connecté : ',currentuser)
+  const user = useSelector((state:RootState)=>state.auth.user)
   return (
     <>
       <Badge
@@ -110,9 +113,11 @@ console.log('utilisateur connecté : ',currentuser)
                     <Avatar alt='John Doe' src='/images/avatars/1.png' />
                     <div className='flex items-start flex-col'>
                       <Typography className='font-medium' color='text.primary'>
-                        John Doe
+                        {user?.username || 'utilisateur'}
                       </Typography>
-                      <Typography variant='caption'>admin@materio.com</Typography>
+                      <Typography variant='caption'>
+                          {user?.email || ''}
+                      </Typography>
                     </div>
                   </div>
                   <Divider className='mlb-1' />

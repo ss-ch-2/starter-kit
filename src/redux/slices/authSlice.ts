@@ -1,15 +1,15 @@
 import { createSlice } from "@reduxjs/toolkit";
 import { LoginUser } from "../actions/authActions";
 interface AuthState {
-    currentuser:any,
-    token:string |null,
+    user:any,
+    tokens:string |null,
     loading:boolean,
     error:string |null
 }
 
 const initialState:AuthState = {
-    currentuser : null,
-    token : null,
+    user : null,
+    tokens : null,
     loading : false,
     error : null
 }
@@ -17,7 +17,15 @@ const initialState:AuthState = {
 const AuthSlice = createSlice({
     name:'auth',
     initialState,
-    reducers:{},
+    reducers:{
+        Logout:state=>{
+            state.user = null
+            state.tokens=null
+            state.error=null
+            localStorage.removeItem('tokens');
+
+        }
+    },
     extraReducers:builder => {
         builder.addCase(LoginUser.pending,state=> {
             state.loading = true
@@ -26,9 +34,9 @@ const AuthSlice = createSlice({
         })
             .addCase(LoginUser.fulfilled,(state,action)=> {
             state.loading = false
-            state.currentuser=action.payload.currentuser
-            state.token=action.payload.token
-            localStorage.setItem('token',action.payload.token)
+            state.user=action.payload.user
+            state.tokens=action.payload.tokens
+            localStorage.setItem('token',JSON.stringify(action.payload.tokens))
             
         })
                .addCase(LoginUser.rejected,(state,action)=> {
@@ -45,3 +53,4 @@ const AuthSlice = createSlice({
 
 
 export default AuthSlice.reducer
+export const {Logout} = AuthSlice.actions
