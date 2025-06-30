@@ -2,10 +2,10 @@
 import type { Metadata } from 'next'
 
 // Component Imports
-import Login from '@views/Login'
 
 // Server Action Imports
 import { getServerMode } from '@core/utils/serverHelpers'
+import LoginV2 from '@/views/auth/Login'
 
 export const metadata: Metadata = {
   title: 'Login',
@@ -16,7 +16,7 @@ const LoginPage = async () => {
   // Vars
   const mode = await getServerMode()
 
-  return <Login mode={mode} />
+  return <LoginV2 mode={mode} />
 }
 
 export default LoginPage
